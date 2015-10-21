@@ -1,0 +1,95 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
+
+int PARENT(int i)
+{
+	return i/2;
+}
+
+int LEFT(int i)
+{
+	return i*2;
+}
+
+int RIGHT(int i)
+{
+	return (i*2)+1;
+}
+
+void swap(int A[],int i,int j)
+{
+	int t;
+	t = A[i];
+	A[i] = A[j];
+	A[j] = t;
+}
+
+//TUTTI GLI INDICI PARTONO DA 1
+
+void MAX_HEAPIFY(int A[], int i, int n, int hs)
+{
+	int l = LEFT(i);
+	int r = RIGHT(i);
+	int max = i;
+	if(A[i-1] < A[l-1] && l <= hs)
+		max = l;
+	if(A[max-1] < A[r-1] && r <= hs)
+		max = r;
+	if(max != i)
+	{
+		swap(A,i-1,max-1);
+		MAX_HEAPIFY(A,max,n,hs);
+	}
+}
+
+void BUILD_MAX_HEAP(int A[], int n, int hs)
+{
+	int i;
+	for(i = (n/2); i > 1; i--)
+		MAX_HEAPIFY(A,i-1,n,hs);
+}
+
+void HEAP_SORT(int A[], int n)
+{
+	int hs = n,i;
+	BUILD_MAX_HEAP(A,n,hs);
+	for(i = n; i > 1; i--)
+	{
+		swap(A,0,i-1);
+		hs--;
+		MAX_HEAPIFY(A,1,n,hs);
+	}
+}
+
+void visua(int A[], int n)
+{
+	int i;
+	printf("[");
+	for(i = 0; i < n-1; i++)
+	{
+		printf("%d,",A[i]);
+	}
+	printf("%d]\n", A[n-1]);
+}
+
+int main()
+{
+	int n,i,tmp;
+	int A[100];
+	printf("Inserisci n: ");
+	scanf("%d",&n);
+	for(i = 0; i < n; i++)
+	{
+		printf("Inserisci un elemento: ");
+		scanf("%d",&A[i]);
+		//A[i] = rand();
+	}
+	printf("\nArray non ordinato: \n");
+	visua(A,n);
+	HEAP_SORT(A,n);
+	printf("Array ordinato: \n");
+	visua(A,n);
+
+}
