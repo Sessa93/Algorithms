@@ -1,3 +1,5 @@
+#!/usr/bin/python3.5
+
 #This class represent a single node within an undirected graph
 class Node:
     def __init__(self):
@@ -18,23 +20,22 @@ class Edge:
         self.n1 = n1
         self.n2 = n2
 
-def compareTo(e1, e2):
-    if e1.cost >= e2.cost:
-        return False
-    return True
+def compareTo(e):
+    return e.cost
 
 def kruskal(nodes, edges):
-    n = nodes.length
-    SORTED_EDGES = edges.sort(compareTo) #O(m*log(m))
+
+    SORTED_EDGES = sorted(edges, key=compareTo, reverse=True) #O(m*log(m))
 
     #Initialization of S to keep track of the connected components
     S = dict()
     for n in nodes:
-        S.append(n,S.length)
+        S[n] = len(S)
 
     R = []
+    n = len(nodes)
 
-    while R.length < n:
+    while len(R) < n-1:
         curr_edge = SORTED_EDGES.pop() #The minimum costing edge
 
         #Is the selected edge endpoints connected in two separated connected components? (ie. is it creating a cycle?)
@@ -43,9 +44,9 @@ def kruskal(nodes, edges):
             actual = S.get(curr_edge.n1)
             #The new edge is NOT creating a cycle
             #So we merge the two connected components
-            for e in S:
-                if e.value == sub:
-                    e.value = actual
+            for k,v in S.items():
+                if v == sub:
+                    S[k] = actual
             #curr_edge is selected as a component of the minimum spanning tree
             R.append(curr_edge)
         pass
@@ -59,4 +60,28 @@ def kruskal(nodes, edges):
 ####
 
 if __name__ == "__main__":
-    #TODO
+    #Building a generic graph
+    n1 = Node(1)
+    n2 = Node(2)
+    n3 = Node(3)
+    n4 = Node(4)
+    n5 = Node(5)
+
+    e1 = Edge(2,n1,n2)
+    e2 = Edge(4,n1,n3)
+    e3 = Edge(1,n1,n4)
+    e4 = Edge(5,n1,n5)
+    e5 = Edge(6,n2,n3)
+    e6 = Edge(2,n2,n4)
+    e7 = Edge(4,n2,n5)
+    e8 = Edge(2,n3,n5)
+    e9 = Edge(1,n3,n4)
+    e10 = Edge(10,n4,n5)
+
+    nodes = [n1,n2,n3,n4,n5]
+    edges = [e1,e2,e3,e4,e5,e6,e7,e8,e9,e10]
+
+    R = kruskal(nodes,edges)
+
+    for e in R:
+        print(str(e.n1.key) +" -> "+ str(e.n2.key))
