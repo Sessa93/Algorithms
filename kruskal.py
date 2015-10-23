@@ -46,6 +46,7 @@ def kruskal(nodes, edges):
             for e in S:
                 if e.value == sub:
                     e.value = actual
+            #curr_edge is selected as a component of the minimum spanning tree
             R.append(curr_edge)
         pass
     #The while cost O(n^2)
