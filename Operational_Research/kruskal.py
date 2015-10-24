@@ -1,24 +1,5 @@
 #!/usr/bin/python3.5
-
-#This class represent a single node within an undirected graph
-class Node:
-    def __init__(self):
-        self.key = 0
-
-    def __init__(self, key):
-        self.key = key
-
-#This class represent a single edge within an undirected graph
-class Edge:
-    def __init__(self):
-        self.cost = 0
-        self.n1 = None
-        self.n2 = None
-
-    def __init__(self, cost, n1, n2):
-        self.cost = cost
-        self.n1 = n1
-        self.n2 = n2
+from graph import *
 
 def compareTo(e):
     return e.cost
@@ -52,7 +33,6 @@ def kruskal(nodes, edges):
         pass
     #The while cost O(n^2)
     #So the total complexity is O(m*logm + n^2)
-
     return R
 
 ####
@@ -84,4 +64,4 @@ if __name__ == "__main__":
     R = kruskal(nodes,edges)
 
     for e in R:
-        print(str(e.n1.key) +" -> "+ str(e.n2.key))
+        print(str(e.n1.key) + " -> " + str(e.n2.key))
