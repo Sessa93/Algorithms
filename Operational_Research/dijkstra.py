@@ -2,55 +2,53 @@
 from graph import *
 import math
 
-#Computes the set of nodes reachable from n1
-def reachable(n1, edges):
-    R = []
-    for e in edges:
-        if e.n1 == n1:
-            R.append(e.n2)
-    return R
-
-def getCostFromEndpoints(edges, n1, n2): #In constant time if we use an adjiacency matrix
-    edge = getEdgeFromEndPoints(edges,n1,n2)
-    if edge != None: return edge.cost
-    return math.inf
-
-def getEdgeFromEndPoints(edges, n1, n2):
-    for e in edges:
-        if e.n1 == n1 and e.n2 == n2:
-            return e
-    else:
-        return None
-
+#Note on complexity: getEdgeFromEndPoints is O(1) if the graph is represented in a matrix
 def dijkstra(nodes, edges, source):
     n = len(nodes)
     m = len(edges)
     R = [] #Result list: contains the edges composing the shortest path
-    C = [0]*n #C[i] contains the cost from source to node i
-    P = [0]*n #P[i] contains the predecessor of node i
+    C = [0]*n #C[i] contains the cost from source to node i via the shortest path
+    P = [None]*n #P[i] contains the predecessor of node i
     S = [source]
 
-    for i in range(n):
-        if nodes[i] != source:
-            C[i] = getCostFromEndpoints(edges,source,nodes[i])
-        else:
-            C[i] = math.inf
-
-    curr_pred = source
     while len(S) != n:
-        #Searching the minimum edge belonging to delta+(S)
-        mn = math.inf
-        for j in range(n):
-            if C[j] <= mn and not(nodes[j] in S):
-                mn = C[j]
-                mn_node_index = j
-                minimum_node = nodes[j]
 
-        starting_node = 
-        S.append(minimum_node)
+        min_cost = math.inf
+        for e in edges:
+            if e.n1 in S and not(e.n2 in S):
+                if (e.cost + C[nodes.index(e.n1)])  <= min_cost:
+                    min_cost = e.cost + C[nodes.index(e.n1)]
+                    min_edge = e
+                    min_node = e.n2
+
+        P[nodes.index(min_node)] = min_edge.n1
+        C[nodes.index(min_node)] = C[nodes.index(min_edge.n1)]+min_edge.cost
+        S.append(min_node)
+
         pass
 
-    return P
+    return [P,C]
+
+def generatePath(nodes, edges, start, end):
+    [P,C] = dijkstra(nodes,edges,start)
+    cost = C[nodes.index(end)]
+    path = [end]
+    p = P[nodes.index(end)]
+
+    while p != start:
+        path.append(p)
+        p = P[nodes.index(p)]
+        cost += C[nodes.index(p)]
+    path.append(start)
+    path.reverse()
+
+
+
+    for n in path:
+        if n != end: print("Node "+str(n.key) + "->",end="")
+    print("Node "+str(end.key))
+    print("Total cost: " + str(cost))
+
 
 ####
 #   MAIN
@@ -78,6 +76,4 @@ if __name__ == "__main__":
     nodes = [n1,n2,n3,n4,n5]
     edges = [e1,e2,e3,e4,e5,e6,e7,e8,e9,e10]
 
-    R = dijkstra(nodes,edges,n1)
-
-    print(R)
+    generatePath(nodes,edges,n1,n5)
