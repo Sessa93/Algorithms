@@ -63,5 +63,8 @@ if __name__ == "__main__":
 
     R = kruskal(nodes,edges)
 
+    t_cost = 0
     for e in R:
+        t_cost += e.cost
         print(str(e.n1.key) + " -> " + str(e.n2.key))
+    print("Total cost: "+str(t_cost))

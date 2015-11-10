@@ -41,9 +41,7 @@ def generatePath(nodes, edges, start, end):
         cost += C[nodes.index(p)]
     path.append(start)
     path.reverse()
-
-
-
+    
     for n in path:
         if n != end: print("Node "+str(n.key) + "->",end="")
     print("Node "+str(end.key))
