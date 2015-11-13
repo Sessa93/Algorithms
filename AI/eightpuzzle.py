@@ -69,6 +69,7 @@ def Result(state, action):
             tmp = state[pos[0]+1][pos[1]]
             state[pos[0]][pos[1]+1] = 0
         state[pos[0]][pos[1]] = tmp
+        #TODO Check paremeters passing policy of Python 3.5
     return None
 
 def Cost(state, action):
@@ -110,4 +111,3 @@ def graphSearch(source, goal, frontier):
     actions = Action(expanding_node.getState())
 
     for a in actions:
-        
