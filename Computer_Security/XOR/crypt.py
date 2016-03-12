@@ -1,25 +1,18 @@
 import random
-import string
+import numpy as np
 import sys
 
 def generaterRndKey(length):
-    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(length))
+    return np.random.bytes(length)
 
-def sxor(s1,s2):
-    return ''.join(chr(ord(a) ^ ord(b)) for a,b in zip(s1,s2))
-
-def getInputText(fileName):
-    f = open(fileName,'r')
-    return f.read()
-
-def writeToFile(s):
-    f = open('output_file','w')
-    f.write(s)
-    f.close()
+def xor(b1,b2):
+    return bytes(x ^ y for x, y in zip(b1, b2))
 
 if __name__ == "__main__":
-    text = getInputText(sys.argv[1])
-    n = int(len(text) / 2)
-    key = generaterRndKey(2)
-    print(key)
-    writeToFile(sxor(text,key*n))
+    with open(sys.argv[1], 'rb') as f, open('output_file','wb') as o:
+        key = generaterRndKey(4)
+        byte = f.read(4)
+        print("Key used: ",int.from_bytes(key, byteorder='big'))
+        while byte:
+            o.write(xor(byte,key))
+            byte = f.read(4)

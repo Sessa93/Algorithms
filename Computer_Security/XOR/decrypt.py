@@ -2,23 +2,16 @@ import random
 import string
 import sys
 
-def generaterRndKey(length):
-    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(length))
+def xor(b1,b2):
+    return bytes(x ^ y for x, y in zip(b1, b2))
 
-def sxor(s1,s2):
-    return ''.join(chr(ord(a) ^ ord(b)) for a,b in zip(s1,s2))
-
-def getInputText(fileName):
-    f = open(fileName,'r')
-    return f.read()
-
-def writeToFile(s):
-    f = open('output_file','w')
-    f.write(s)
-    f.close()
+def toBytes(s):
+    return bytes(x for x in s)
 
 if __name__ == "__main__":
-    text = getInputText(sys.argv[1])
-    n = int(len(text) / 2)
-    key = sys.argv[2]
-    print(sxor(text,key*n))
+    with open(sys.argv[2], 'rb') as f, open('output_file.zip','wb') as o:
+        key = int(sys.argv[1])
+        byte = f.read(4)
+        while byte:
+            o.write(xor(byte,key.to_bytes(4, byteorder='big')))
+            byte = f.read(4)
