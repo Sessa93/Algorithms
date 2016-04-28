@@ -3,7 +3,7 @@ clear all
 close all
 clc
 
-sigma = @(x) 1./(1 + exp(-x));
+sigma = @(x) 1./(1 + exp(-x)); % Sigmoid function
 
 %% Load the dataset
 load iris_dataset.mat
@@ -101,6 +101,45 @@ gscatter(xc(:,1),xc(:,2),pred);
 hold on
 s = -2:0.01:2.5;
 plot(s, -(s * wl(2) + wl(1)) / wl(3),'r');
+
+%% Naive bayes classifier
+
+naive_b = fitcnb(xc,tc);
+
+t_pred = predict(naive_b,xc);
+confusion(tc,t_pred)
+
+figure();
+[a,b] = meshgrid(-3:0.1:3,-3:0.1:4);
+preds = predict(naive_b,[a(:) b(:)]);
+axis tight;
+gscatter(xc(:,1),xc(:,2),tc);
+hold on;
+gscatter(a(:),b(:),preds);
+hold on;
+
+% Point generation
+n_gen = 100;
+dim = 2;
+
+gen_d = zeros(n_gen,dim);
+gen_t = zeros(n_gen,1);
+
+prior = cumsum(naive_b.Prior);
+param = naive_b.DistributionParameters;
+
+for ii=1:n_gen
+    % pick a random class
+    gen_t(ii) = find(prior > rand(),1);
+    for jj=1:dim
+        mu = param{gen_t(ii), jj}(1);
+        sigma = param{gen_t(ii),jj}(2);
+        gen_d(ii,jj) = normrnd(mu,sigma);
+    end
+end
+gscatter(gen_d(:,1), gen_d(:,2),gen_t);
+
+
 
 
 
