@@ -81,7 +81,7 @@ t_new = func(x_new) + eps * randn(1,1);
 x_enh_new = [1 x_new 0];
 phi_new = [1 x_new x_new.^2];
 
-% Prediction for the new point
+% Predictions for the new point
 for ii=1:n_rep
    y_pred_lin(ii) = lin_coeff(ii,:) * x_enh_new';
    y_pred_qua(ii) = qua_coeff(ii,:) * phi_new';
