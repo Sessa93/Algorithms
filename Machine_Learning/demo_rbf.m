@@ -27,12 +27,12 @@ for i=1:N
     noise = sigma*normrnd(0,1);
     data_n(i) = data(i) + noise;
 end
-%plot(data_n-data,'.'); 
+%plot(data_n-data,'.');
 %pause;
 plot(data_n,'+');
 %pause;
 
-%dataset creation 
+%dataset creation
 p=[1:N];
 
 % no preprocessing
@@ -56,29 +56,29 @@ for h=MIN_NUM_HIDDEN:MAX_NUM_HIDDEN
     y = sim(net_old,pn_train);
     e = tn_train-y;
     old_perf = mse(e);
-    
+
     y = sim(net_old,pn_valid);
     e = tn_valid-y;
     old_valid = mse(e);
-    
+
     netlog{h}={net_old old_perf old_valid SIGMA_MIN};
 
     j = 1;
 %    perfmatrix(i,j) = old_perf;
     perfmatrix(i,j) = old_valid;
-    j = j+1; 
+    j = j+1;
 
     for spread=SIGMA_MIN+SIGMA_STEP:SIGMA_STEP:SIGMA_MAX
-        % traingd traingda trainbfg trainlm (logsig,tansig) 
+        % traingd traingda trainbfg trainlm (logsig,tansig)
         net = newrb(pn_train,tn_train,0.0,spread,h);
         y = sim(net,pn_train);
         e = tn_train-y;
         perf = mse(e);
-        
+
         y = sim(net,pn_valid);
         e = tn_valid-y;
         valid = mse(e);
-        
+
 %        perfmatrix(i,j)=perf;
         perfmatrix(i,j)=valid;
         j=j+1;
@@ -94,11 +94,11 @@ for h=MIN_NUM_HIDDEN:MAX_NUM_HIDDEN
         % testing
         close(gcf);
         output = sim(net,pn);
-    
+
         % postprocessing
         %output = postmnmx(output,mint,maxt);
 
-        plot(data_n,'+');hold on; 
+        plot(data_n,'+');hold on;
         plot(output,'r'); hold off;
         title_str = sprintf('Num. Basis: %d  Spread: %f',h,spread)
         title(title_str);
@@ -111,7 +111,7 @@ for h=MIN_NUM_HIDDEN:MAX_NUM_HIDDEN
     performance(h) =  netlog{h}{3};
 end
 
-plot(performance); 
+plot(performance);
 %pause
 
 
@@ -125,7 +125,7 @@ output = sim(netlog{minindex}{1},pn);
 % postprocessing
 %output = postmnmx(output,mint,maxt);
 
-plot(data_n,'+');hold on; 
+plot(data_n,'+');hold on;
 plot(output,'r'); hold off;
 title_str = sprintf('Num. Basis: %d\tSpread: %f',minindex,netlog{minindex}{4})
 title(title_str);
