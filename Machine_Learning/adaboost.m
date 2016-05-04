@@ -7,28 +7,56 @@ clc;
 
 %% Create the dataset
 n_tot = 40;
-eps = 2;
-func = @(x) ((0.5 - x) .* (5 - x) .* (x - 3));
+eps = 0;
+func = @(x) 1 + x.^2;
+
 x = 5 * randn(n_tot,1);
+t = func(x) + eps*randn(n_tot,1);
+plot(x,t,'x');
+hold on;
+
+% Definitions for weighted least squares
+f = @(x,a,b) a + b*x;
+wobj = @(p,x,y,w) sum(w .* (f(x,p(1),p(2)) - y) .^ 2);
 
 %% AdaBoost
 n_rep = 10;
 w = repmat(1/n_tot,n_tot,1);
 p = w;
-
+mods = zeros(n_rep,2);
 for ii=1:n_rep
    % Normalize the weigths
    for jj=1:n_tot
        p(jj) = w(jj)/sum(w);
    end
    
-   % Weighted sampling + learning
-   x_new = randsample(x,n_tot,'true',p);
-   t_new = func(x_new) + eps*randn(n_tot,1);
-   fit_opt = fittype({'1','x_new'},'independent','x_new','dependent','t_new','coefficients',{'w0','w1'});
-   lin_mod(ii) = fit(x_new,t_new,fit_opt);
-   plot(lin_mod(ii),x_new,t_new);
+   %Simple weighted linear regression(linear feature)
+   w_init = [0, 0];  % Initial guess for a and b
+   min_p = fminsearch( @(min_p) wobj(min_p,x,t,p), w_init);
+   a = min_p(1);
+   b = min_p(2);
+   mods(ii,1) = a;
+   mods(ii,2) = b;
    
-   % Calculate epsilon
+   %Plotting
+   s = linspace(min(x),max(x),n_tot);
+   plot(s,a + b*s);
    
+   %Error calculation
+   e = wobj([a,b],x,t,p);
+   
+   beta = e / (1-e);
+   mods(ii,3) = beta;
+   
+   %Updating the weigth
+   pred = a + b*x;
+   for jj=1:n_tot
+       w(jj) = w(jj)*beta^(1 - abs(t(jj) - pred(jj))); 
+   end
 end
+
+%% Final prediction
+for ii=1:n_tot
+   pred_t(ii) = sum(log(1/mods(:,3))' .* abs(repmat(t(ii),n_rep,1) - (mods(:,1) + x(ii)*mods(:,2))));
+end
+plot(x,pred_t,'o');
