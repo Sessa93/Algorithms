@@ -1,16 +1,16 @@
 import sys
 
 if len(sys.argv) < 4:
-    print("0x<value to write> <first pos on stack> 0x<target address>")
+    print("0x<value to write> <pos> 0x<target address>")
     sys.exit(1)
 
 #From a string of type 0x12341234 to the byte value
 def hex_to_bytes(s):
-    s = s[2:]                   #remove initial 0x
-    b =  chr(int(s[0:2], 16))   #1st byte
-    b += chr(int(s[2:4], 16))   #2nd byte
-    b += chr(int(s[4:6], 16))   #4rd byte
-    b += chr(int(s[6:8], 16))   #5th byte
+    s = s[2:]
+    b =  chr(int(s[0:2], 16))
+    b += chr(int(s[2:4], 16))
+    b += chr(int(s[4:6], 16))
+    b += chr(int(s[6:8], 16))
     return b
 
 #From the byte to the hex string
