@@ -1,0 +1,7 @@
+# Test matrix, debugging purposes
+
+A C G T
+A 10 -5 0 -5
+C -5 10 -5 0
+G 0 -5 10 -5
+T -5 0 -5 10
