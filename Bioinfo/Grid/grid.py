@@ -3,9 +3,10 @@
 # sequences (nucleotides or amino-acids) using the grid method.
 
 import sys, argparse
-import numpy
+import numpy as np
 from grid_cell import GridCell
 from Direction import Direction
+import matplotlib.pyplot as plt
 
 def main():
     # Parser for command line arguments
@@ -105,11 +106,11 @@ def local_align(S, T, gap, matrix, threshold):
                 score = grid[ii-1, jj].score + gap
                 direction = [Direction.BOTTOM]
             elif grid[ii-1, jj].score + gap == score:
-                direction.append(Direction.BOTTOM)
+                direction.append(Direction.RIGHT)
 
             if (grid[ii,jj-1].score + gap) > score:
                 score = grid[ii,jj-1].score + gap
-                direction = [Direction.RIGHT]
+                direction = [Direction.BOTTOM]
             elif (grid[ii,jj-1].score + gap) == score:
                 direction.append(Direction.RIGHT)
 
@@ -123,6 +124,7 @@ def local_align(S, T, gap, matrix, threshold):
         for jj in range(1,len(S)+1):
             if grid[ii,jj].score >= threshold:
                 traceback(S, T, grid, ii, jj,'', '')
+    plot(grid,S,T)
 
 def global_align(S, T, gap, matrix):
     # Initialization
@@ -155,6 +157,7 @@ def global_align(S, T, gap, matrix):
             grid[ii, jj] = GridCell(score, direction)
 
     traceback(S, T, grid, ii, jj,'', '')
+    plot(grid,S,T)
 
 def traceback(S, T, grid, i, j, alignmentS, alignmentT):
     if Direction.NONE in grid[i,j].directions:
@@ -170,6 +173,34 @@ def traceback(S, T, grid, i, j, alignmentS, alignmentT):
                 traceback(S,T,grid,i-1,j,alignmentS + '-',alignmentT + T[i-1])
             else:
                 traceback(S,T,grid,i,j-1,alignmentS + S[j-1],alignmentT + '-')
+
+def plot(grid,S, T):
+    #Extract the scores
+    scores = []
+    fig, ax = plt.subplots()
+
+    for ii in range(len(T)+1):
+        row = []
+        for jj in range(len(S)+1):
+            ax.text(jj-0.15,ii+0.1,str(grid[ii,jj].score))
+            row.append(grid[ii,jj].score)
+            for d in grid[ii,jj].directions:
+                if d == Direction.DIAG and ii > 0 and jj > 0:
+                    ax.arrow((jj-1)+0.2,(ii-1)+0.2, 0.5, 0.5, head_width=0.2, head_length=0.1, fc='k', ec='k')
+                elif d == Direction.BOTTOM and ii > 0:
+                    ax.arrow(jj+0.1,(ii-1)+0.2, 0, 0.5, head_width=0.2, head_length=0.1, fc='k', ec='k')
+                elif jj > 0 and d == Direction.RIGHT:
+                    ax.arrow((jj-1)+0.3,ii+0.2, 0.5, 0, head_width=0.2, head_length=0.1, fc='k', ec='k')
+        scores.append(row)
+
+    ax.matshow(scores)
+    labels_x = ['']+[c for c in S]
+    labels_y = ['']+[c for c in T]
+    ax.set_xticks(np.arange(0, len(S)+1, 1))
+    ax.set_yticks(np.arange(0, len(T)+1, 1))
+    ax.set_xticklabels(labels_x)
+    ax.set_yticklabels(labels_y)
+    plt.show()
 
 if __name__ == "__main__":
     main()
