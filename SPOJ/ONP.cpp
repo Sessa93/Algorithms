@@ -2,11 +2,14 @@
 #include <cmath>
 #include <stdio.h>
 #include <stack>
+#include <vector>
 #include <string>
 using namespace std;
 
 #define OPN 40
 #define CLS 41
+
+// Example (a+(b*c)) ~ abc*+
 
 bool check_letter(char c) {
   if(c >= 97 && c <= 122) return true;
@@ -18,53 +21,79 @@ bool check_operator(char c) {
   return false;
 }
 
+int get_priority(char op) {
+  switch (op) {
+    case '+':
+      return 0;
+      break;
+    case '-':
+      return 1;
+      break;
+    case '*':
+      return 2;
+      break;
+    case '/':
+      return 3;
+      break;
+    case '^':
+      return 4;
+      break;
+  }
+  return -1;
+}
+
+// Shunting-Yard
 void convert_to_polish(char *s) {
-  std::stack<char> stck, t_stck;
-  int levels = 0,level=0;
-  char op,c;
-  bool copy = false;
+  std::stack<char> op_stck;
+  std::vector<char> output;
+  char op;
 
-  //Count the levels
-  //(a+(b*c))
-  for(int i = 0; s[i] != 0; i++)
-    if(s[i] == OPN) levels++;
+  for(int i = 0; s[i] != 0; i++) {
+    if(check_letter(s[i])) output.push_back(s[i]);
 
-  for(int j = 0; s[j] != 0; j++) {
-    if(s[j] == OPN) level++;
-    if(s[j] == CLS) level--;
-    if(level==1) copy = true;
-    if(level < 1) copy = false;
-    if(copy) {
-      if(check_operator(s[j]) && level == 1) op = s[j];
-      else stck.push(s[j]);
+    if(check_operator(s[i])) {
+      if(op_stck.empty()) op_stck.push(s[i]);
+      else {
+        while(get_priority(s[i]) < get_priority(op_stck.top())) {
+          output.push_back(op_stck.top());
+          op_stck.pop();
+        }
+        op_stck.push(s[i]);
+      }
     }
-    if(s[j] == OPN && 1 == level) stck.pop();
-  }
-  stck.push(op);
 
-  for(int l = 2; l <= levels; l++){
-    c = stck.top();
-    while(c != CLS) {
-      t_stck.push(c);
-      stck.pop();
-      c = stck.top();
+    if(s[i] == OPN) {
+      op_stck.push(s[i]);
     }
-    stck.pop();
-    c = stck.pop();
-    while(!check_operator(c)) {
-      
+
+    if(s[i] == CLS) {
+      while(op_stck.top() != OPN) {
+        output.push_back(op_stck.top());
+        op_stck.pop();
+        if(op_stck.empty()) {
+          cout << "Error: non balanced parenthesis!";
+          return;
+        }
+      }
+      op_stck.pop();
     }
   }
-
-  while(!stck.empty()) {
-    cout << stck.top() << "\n";
-    stck.pop();
+  for(int i = 0; i < output.size(); i++) {
+    cout << output[i];
   }
 }
 
 int main() {
-  char *s;
-  cin >> s;
-  convert_to_polish(s);
+  int n;
+  char S[100][400];
+
+  cin >> n;
+  for(int i = 0; i < n; i++) {
+    cin >> S[i];
+  }
+  for(int i = 0; i < n; i++) {
+    convert_to_polish(S[i]);
+    cout << "\n";
+  }
   return 0;
 }
